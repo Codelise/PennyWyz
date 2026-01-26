@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PennyWyz - Expense Tracker</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Header Navigation -->
+    <header class="header">
+      <div class="header-container">
+        <!-- Logo & Brand -->
+        <div class="header-left">
+          <div class="logo">
+            <div class="logo-icon">
+              <span class="material-symbols-outlined">payments</span>
+            </div>
+            <h1 class="logo-text">PennyWyz</h1>
+          </div>
+
+          <!-- Navigation -->
+          <nav class="nav-menu">
+            <a href="#" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link">Expenses</a>
+            <a href="#" class="nav-link">Reports</a>
+          </nav>
+        </div>
+
+        <!-- Right Side -->
+        <div class="header-right">
+          <!-- Search Bar -->
+          <div class="search-bar">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search transactions..."
+            />
+          </div>
+
+          <!-- Notification -->
+          <button class="icon-btn" id="notification-btn">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+
+          <!-- Profile -->
+          <div class="profile-avatar"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Summary Cards -->
+      <section class="stats-section">
+        <div class="stat-card">
+          <div class="stat-header">
+            <p class="stat-label">Total Spent</p>
+            <span class="stat-icon red">
+              <span class="material-symbols-outlined">trending_down</span>
+            </span>
+          </div>
+          <p class="stat-amount" id="total-spent">₱0.00</p>
+          <p class="stat-change negative">
+            -5.2% <span class="stat-vs">vs last month</span>
+          </p>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <p class="stat-label">Income</p>
+            <span class="stat-icon green">
+              <span class="material-symbols-outlined">trending_up</span>
+            </span>
+          </div>
+          <p class="stat-amount">₱5,200.00</p>
+          <p class="stat-change positive">
+            +12.4% <span class="stat-vs">vs last month</span>
+          </p>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <p class="stat-label">Needs</p>
+            <span class="stat-icon gray">
+              <span class="material-symbols-outlined">inventory_2</span>
+            </span>
+          </div>
+          <p class="stat-amount" id="needs-total">₱0.00</p>
+          <p class="stat-change negative">
+            -2.1% <span class="stat-vs">budget remaining</span>
+          </p>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <p class="stat-label">Wants</p>
+            <span class="stat-icon purple">
+              <span class="material-symbols-outlined">shopping_bag</span>
+            </span>
+          </div>
+          <p class="stat-amount" id="wants-total">₱0.00</p>
+          <p class="stat-change positive">
+            +4.5% <span class="stat-vs">savings potential</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- Main Grid Layout -->
+      <div class="content-grid">
+        <!-- Recent Expenses Section -->
+        <section class="expenses-section">
+          <div class="card">
+            <!-- Toolbar -->
+            <div class="card-toolbar">
+              <h2 class="card-title">Recent Expenses</h2>
+              <div class="toolbar-actions">
+                <button class="icon-btn" id="filter-btn">
+                  <span class="material-symbols-outlined">filter_list</span>
+                </button>
+                <button class="icon-btn" id="export-btn">
+                  <span class="material-symbols-outlined">download</span>
+                </button>
+                <button class="btn-primary" id="add-expense-btn">
+                  <span class="material-symbols-outlined">add</span>
+                  Add Expense
+                </button>
+              </div>
+            </div>
+
+            <!-- Expenses Table -->
+            <div class="table-container">
+              <table class="expenses-table" id="expenses-table">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Item</th>
+                    <th>Date</th>
+                    <th class="text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="expenses-tbody">
+                  <!-- Empty state -->
+                  <tr class="empty-state" id="empty-state">
+                    <td colspan="5">
+                      <div class="empty-content">
+                        <span class="material-symbols-outlined empty-icon"
+                          >inbox</span
+                        >
+                        <p class="empty-text"></p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- View All -->
+            <div class="card-footer">
+              <button class="btn-link" id="view-all-btn">
+                View All Transactions
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <!-- Spending Breakdown Chart -->
+          <div class="card">
+            <h3 class="card-title">Spending Breakdown</h3>
+
+            <!-- Chart Placeholder (Chart.js will render here) -->
+            <div class="chart-container">
+              <canvas id="spending-chart"></canvas>
+            </div>
+
+            <!-- Category Progress Bars -->
+            <div class="category-list" id="category-list">
+              <div class="category-item">
+                <div class="category-header">
+                  <span class="category-name">Needs</span>
+                  <span class="category-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill purple" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div class="category-item">
+                <div class="category-header">
+                  <span class="category-name">Wants</span>
+                  <span class="category-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill amber" style="width: 0%"></div>
+                </div>
+              </div>
+
+              <div class="category-item">
+                <div class="category-header">
+                  <span class="category-name">Savings</span>
+                  <span class="category-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill green" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Financial Goals (Optional) -->
+          <div class="card">
+            <h3 class="card-title">Financial Goals</h3>
+            <div class="goals-list">
+              <div class="goal-item">
+                <div class="goal-icon purple">
+                  <span class="material-symbols-outlined">savings</span>
+                </div>
+                <div class="goal-content">
+                  <div class="goal-header">
+                    <span class="goal-name">New Home</span>
+                    <span class="goal-percent">75%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill purple" style="width: 75%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="goal-item">
+                <div class="goal-icon green">
+                  <span class="material-symbols-outlined">show_chart</span>
+                </div>
+                <div class="goal-content">
+                  <div class="goal-header">
+                    <span class="goal-name">Investments</span>
+                    <span class="goal-percent">40%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill green" style="width: 40%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab-add-expense">
+      <span class="material-symbols-outlined">add</span>
+    </button>
+
+    <!-- Add Expense Modal -->
+    <div class="modal-overlay" id="expense-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title">Add New Expense</h2>
+            <p class="modal-subtitle">
+              Fill in the details to track your spending.
+            </p>
+          </div>
+          <button class="modal-close" id="close-modal">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <form class="modal-form" id="expense-form">
+          <!-- Expense Name -->
+          <div class="form-group">
+            <label for="expense-name" class="form-label">Expense Name</label>
+            <input
+              type="text"
+              id="expense-name"
+              class="form-input"
+              placeholder="e.g., Grocery Shopping"
+              required
+            />
+          </div>
+
+          <!-- Amount & Date Row -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="expense-amount" class="form-label">Amount</label>
+              <div class="input-with-icon">
+                <span class="input-icon">₱</span>
+                <input
+                  type="number"
+                  id="expense-amount"
+                  class="form-input with-icon"
+                  placeholder="0.00"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="expense-date" class="form-label">Date</label>
+              <input
+                type="date"
+                id="expense-date"
+                class="form-input"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="form-group">
+            <label for="expense-category" class="form-label">Category</label>
+            <select id="expense-category" class="form-select" required>
+              <option value="">Select category</option>
+              <option value="Needs">Needs</option>
+              <option value="Wants">Wants</option>
+              <option value="Savings">Savings</option>
+              <option value="Emergency">Emergency</option>
+              <option value="Investments">Investments</option>
+            </select>
+          </div>
+
+          <!-- Note (Optional) -->
+          <div class="form-group">
+            <label for="expense-note" class="form-label">Note (Optional)</label>
+            <textarea
+              id="expense-note"
+              class="form-textarea"
+              placeholder="Any additional details..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" id="cancel-btn">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary" id="save-expense">
+              <span class="material-symbols-outlined">check_circle</span>
+              Save Expense
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Your JavaScript -->
+    <script src="script.js"></script>
+  </body>
+</html>
