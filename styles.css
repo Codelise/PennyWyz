@@ -901,6 +901,10 @@ body {
   .nav-menu {
     display: none;
   }
+
+  .sidebar {
+    grid-column: 1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -910,6 +914,16 @@ body {
 
   .header-container {
     padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .header-left {
+    gap: 1rem;
+  }
+
+  .header-right {
+    gap: 0.75rem;
   }
 
   .main-content {
@@ -923,21 +937,88 @@ body {
   .card-toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
 
   .toolbar-actions {
     width: 100%;
-    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    flex: 1;
+    justify-content: center;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .expenses-table {
+    font-size: 0.8125rem;
+  }
+
+  .expenses-table th,
+  .expenses-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .category-badge {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.5rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .stat-amount {
+    font-size: 1.5rem;
+  }
+
+  .chart-container {
+    max-width: 200px;
+  }
+
+  .category-list,
+  .goals-list {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .logo-text {
+    font-size: 1.125rem;
+  }
+
+  .logo-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .profile-avatar {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .icon-btn {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .content-grid {
+    gap: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
   .stats-section {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
   .modal {
@@ -945,5 +1026,78 @@ body {
     margin: 0;
     border-radius: 0;
     max-height: 100vh;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+  }
+
+  .modal-form {
+    padding: 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn-secondary,
+  .form-actions .btn-primary {
+    flex: 1;
+    width: 100%;
+  }
+
+  .fab {
+    width: 3rem;
+    height: 3rem;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .fab .material-symbols-outlined {
+    font-size: 28px;
+  }
+
+  .expenses-table th,
+  .expenses-table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  .action-btns {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .btn-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .btn-icon .material-symbols-outlined {
+    font-size: 18px;
+  }
+
+  .stat-label {
+    font-size: 0.6875rem;
+  }
+
+  .stat-amount {
+    font-size: 1.25rem;
+  }
+
+  .stat-change {
+    font-size: 0.75rem;
+  }
+
+  .header-container {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .main-content {
+    padding: 1rem 0.75rem;
   }
 }
