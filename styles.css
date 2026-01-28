@@ -336,6 +336,8 @@ body {
 }
 
 .card-title {
+  margin-top: 1rem;
+  text-align: center;
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--gray-900);

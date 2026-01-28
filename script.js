@@ -7,6 +7,8 @@ let currentEditId = null;
 document.addEventListener("DOMContentLoaded", () => {
   loadExpenses();
   expenseTotal();
+  expenseTotal();
+  updateCategoryTotal();
   displayExpenses();
   setupEventListeners();
 });
@@ -97,15 +99,18 @@ function handleAddExpense(event) {
 
     expenseArray.push(expenseObject);
   }
+  0;
+  currentEditId = null;
 
   saveToLocalStorage();
   alert("Saved Successfully!");
-  expenseTotal();
+
   displayExpenses();
+  expenseTotal();
+  expenseTotal();
+  updateCategoryTotal();
   closeModal();
   document.querySelector("#expense-form").reset();
-
-  currentEditId = null;
 }
 
 // Delete Expense
@@ -133,6 +138,7 @@ function editExpense(id) {
   openModal();
 }
 
+// CALCULATIONS
 // Count Total
 function expenseTotal() {
   const total = expenseArray.reduce(
@@ -140,6 +146,99 @@ function expenseTotal() {
     0,
   );
   document.querySelector("#total-spent").textContent = `₱${total.toFixed(2)}`;
+}
+
+// Total per category function
+function updateCategoryTotal() {
+  const needsTotal = expenseArray
+    .filter((expense) => expense.expenseCategory === "Needs")
+    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+
+  const wantsTotal = expenseArray
+    .filter((expense) => expense.expenseCategory === "Wants")
+    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+
+  const savingsTotal = expenseArray
+    .filter((expense) => expense.expenseCategory === "Savings")
+    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+
+  const emergencyTotal = expenseArray
+    .filter((expense) => expense.expenseCategory === "Emergency")
+    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+
+  const investmentsTotal = expenseArray
+    .filter((expense) => expense.expenseCategory === "Investments")
+    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+
+  const grandTotal =
+    needsTotal + wantsTotal + savingsTotal + emergencyTotal + investmentsTotal;
+
+  const needsPercentage = grandTotal > 0 ? (needsTotal / grandTotal) * 100 : 0;
+  const wantsPercentage = grandTotal > 0 ? (wantsTotal / grandTotal) * 100 : 0;
+  const savingsPercentage =
+    grandTotal > 0 ? (savingsTotal / grandTotal) * 100 : 0;
+  const emergencyPercentage =
+    grandTotal > 0 ? (emergencyTotal / grandTotal) * 100 : 0;
+  const investmentsPercentage =
+    grandTotal > 0 ? (investmentsTotal / grandTotal) * 100 : 0;
+
+  // Needs and Wants Stats Cards
+  document.querySelector("#needs-total").textContent =
+    `₱${needsTotal.toFixed(2)}`;
+  document.querySelector("#wants-total").textContent =
+    `₱${wantsTotal.toFixed(2)}`;
+
+  const categories = [
+    {
+      name: "Needs",
+      total: needsTotal,
+      percent: needsPercentage,
+      color: "purple",
+    },
+    {
+      name: "Wants",
+      total: wantsTotal,
+      percent: wantsPercentage,
+      color: "amber",
+    },
+    {
+      name: "Savings",
+      total: savingsTotal,
+      percent: savingsPercentage,
+      color: "green",
+    },
+    {
+      name: "Emergency",
+      total: emergencyTotal,
+      percent: emergencyPercentage,
+      color: "amber",
+    },
+    {
+      name: "Investments",
+      total: investmentsTotal,
+      percent: investmentsPercentage,
+      color: "purple",
+    },
+  ];
+
+  const categoryList = document.querySelector("#category-list");
+
+  categoryList.innerHTML = "";
+
+  categories.forEach((category) => {
+    const categoryContainer = document.createElement("div");
+    categoryContainer.className = "category-item";
+    categoryContainer.innerHTML = `
+       <div class="category-header">
+          <span class="category-name">${category.name}</span>
+          <span class="category-percent">${category.percent.toFixed(1)}%</span>
+       </div>
+        <div class="progress-bar">
+          <div class="progress-fill ${category.color}" style="width: ${category.percent}%"></div>
+        </div>
+    `;
+    categoryList.appendChild(categoryContainer);
+  });
 }
 
 // LOCAL STORAGE FUNCTIONS
