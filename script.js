@@ -1,32 +1,58 @@
 // EXPENSE ARRAY
 let expenseArray = [];
 
+// INCOME ARRAY
+let incomeArray = [];
+
 // Tracks edit state
 let currentEditId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadIncome();
   loadExpenses();
   expenseTotal();
-  expenseTotal();
+  incomeTotal();
   updateCategoryTotal();
   displayExpenses();
   setupEventListeners();
 });
 
 function setupEventListeners() {
-  // Open modal
+  // Open Expense modal
   document
     .querySelector("#add-expense-btn")
-    .addEventListener("click", openModal);
+    .addEventListener("click", openExpenseModal);
 
-  // Close modal
-  document.querySelector("#close-modal").addEventListener("click", closeModal);
-  document.querySelector("#cancel-btn").addEventListener("click", closeModal);
+  // Close Expense modal
+  document
+    .querySelector("#close-modal")
+    .addEventListener("click", closeExpenseModal);
+  document
+    .querySelector("#cancel-btn")
+    .addEventListener("click", closeExpenseModal);
+
+  // Open Income modal
+  document
+    .querySelector("#add-income-btn")
+    .addEventListener("click", openIncomeModal);
+
+  // Close Income Modal
+  document
+    .querySelector("#close-income-modal")
+    .addEventListener("click", closeIncomeModal);
+  document
+    .querySelector("#cancel-income-btn")
+    .addEventListener("click", closeIncomeModal);
 
   // Submit added expense
   document
     .querySelector("#expense-form")
     .addEventListener("submit", handleAddExpense);
+
+  // Submit added income
+  document
+    .querySelector("#income-form")
+    .addEventListener("submit", handleAddIncome);
 
   // Used tbody because edit and delete btns are inside that
   const tbody = document.querySelector("#expenses-tbody");
@@ -47,17 +73,28 @@ function setupEventListeners() {
 }
 
 // EXPENSE MODAL FUNCTIONS
-// Open Modal
-function openModal() {
+// Open Expense Modal
+function openExpenseModal() {
   const expenseModal = document.querySelector("#expense-modal");
   expenseModal.style.display = "flex";
 }
 
-// Close Modal
-const closeModal = () => {
+// Close Expense Modal
+function closeExpenseModal() {
   const expenseModal = document.querySelector("#expense-modal");
   expenseModal.style.display = "none";
-};
+}
+
+// Open Income Modal
+function openIncomeModal() {
+  const incomeModal = document.querySelector("#income-modal");
+  incomeModal.style.display = "flex";
+}
+// Close Income Modal
+function closeIncomeModal() {
+  const incomeModal = document.querySelector("#income-modal");
+  incomeModal.style.display = "none";
+}
 
 // CRUD
 // ADD EXPENSE FUNCTION
@@ -65,13 +102,20 @@ function handleAddExpense(event) {
   event.preventDefault();
 
   const expenseName = document.querySelector("#expense-name").value.trim();
-  const expenseAmount = Number(document.querySelector("#expense-amount").value);
+  const expenseAmount = parseFloat(
+    document.querySelector("#expense-amount").value,
+  );
   const expenseCategory = document.querySelector("#expense-category").value;
   const expenseDate = document.querySelector("#expense-date").value;
   const expenseNote = document.querySelector("#expense-note").value;
 
   if (!expenseName || !expenseAmount || !expenseDate) {
     alert("Fill the required fields to add expense");
+    return;
+  }
+
+  if (isNaN(expenseAmount) || expenseAmount <= 0) {
+    alert("Please enter positive number");
     return;
   }
 
@@ -99,17 +143,15 @@ function handleAddExpense(event) {
 
     expenseArray.push(expenseObject);
   }
-  0;
+
   currentEditId = null;
 
   saveToLocalStorage();
   alert("Saved Successfully!");
-
   displayExpenses();
   expenseTotal();
-  expenseTotal();
   updateCategoryTotal();
-  closeModal();
+  closeExpenseModal();
   document.querySelector("#expense-form").reset();
 }
 
@@ -135,58 +177,107 @@ function editExpense(id) {
   document.querySelector("#expense-date").value = expenseToEdit.expenseDate;
 
   currentEditId = id;
-  openModal();
+  openExpenseModal();
 }
 
+function handleAddIncome() {
+  const incomeName = document.querySelector("#income-name").value.trim();
+  const incomeAmount = parseFloat(
+    document.querySelector("#income-amount").value,
+  );
+  const incomeDate = document.querySelector("#income-date").value;
+  const incomeCategory = document.querySelector("#income-category").value;
+  const incomeNote = document.querySelector("#income-note").value;
+
+  if (!incomeName || !incomeAmount || !incomeDate) {
+    alert("All fields required!");
+    return;
+  }
+
+  if (isNaN(incomeAmount) || incomeAmount <= 0) {
+    alert("Positive numbers only");
+    return;
+  }
+  const incomeObject = {
+    id: "-" + Math.random().toString(36).substring(2, 9),
+    incomeName: incomeName,
+    incomeAmount: incomeAmount,
+    incomeCategory: incomeCategory,
+    incomeDate: incomeDate,
+    incomeNote: incomeNote,
+    createdAt: Date.now(),
+  };
+
+  console.log(incomeObject);
+
+  incomeArray.push(incomeObject);
+  alert("Saved income");
+  saveToLocalStorage();
+  incomeTotal();
+  closeIncomeModal();
+  document.querySelector("#income-form").reset();
+}
 // CALCULATIONS
 // Count Total
 function expenseTotal() {
-  const total = expenseArray.reduce(
+  const expenseTotal = expenseArray.reduce(
     (sum, expense) => sum + expense.expenseAmount,
     0,
   );
-  document.querySelector("#total-spent").textContent = `₱${total.toFixed(2)}`;
+
+  document.querySelector("#total-spent").textContent =
+    currencyFormatter.format(expenseTotal);
+}
+
+// Income Total
+function incomeTotal() {
+  const incomeTotal = incomeArray.reduce(
+    (sum, income) => sum + income.incomeAmount,
+    0,
+  );
+
+  document.querySelector("#income-stats-amount").textContent =
+    currencyFormatter.format(incomeTotal);
+}
+
+// Calculate percentage
+function calculatePercent(part, total) {
+  return total > 0 ? (part / total) * 100 : 0;
+}
+
+// Reusable function for updateCategoryTotal()
+function getCategoryTotal(category) {
+  return expenseArray // only use return when the function is "Query"/Result not "Command"
+    .filter((expense) => expense.expenseCategory === category)
+    .reduce((sum, expense) => sum + expense.expenseAmount, 0); // expense - current, sum - holder of expense value
 }
 
 // Total per category function
 function updateCategoryTotal() {
-  const needsTotal = expenseArray
-    .filter((expense) => expense.expenseCategory === "Needs")
-    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+  const needsTotal = getCategoryTotal("Needs"); // ("Needs") = (category) paremeter from getCategoryTotal()
 
-  const wantsTotal = expenseArray
-    .filter((expense) => expense.expenseCategory === "Wants")
-    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+  const wantsTotal = getCategoryTotal("Wants");
 
-  const savingsTotal = expenseArray
-    .filter((expense) => expense.expenseCategory === "Savings")
-    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+  const savingsTotal = getCategoryTotal("Savings");
 
-  const emergencyTotal = expenseArray
-    .filter((expense) => expense.expenseCategory === "Emergency")
-    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+  const emergencyTotal = getCategoryTotal("Emergency");
 
-  const investmentsTotal = expenseArray
-    .filter((expense) => expense.expenseCategory === "Investments")
-    .reduce((sum, expense) => sum + expense.expenseAmount, 0);
+  const investmentsTotal = getCategoryTotal("Investments");
 
   const grandTotal =
     needsTotal + wantsTotal + savingsTotal + emergencyTotal + investmentsTotal;
 
-  const needsPercentage = grandTotal > 0 ? (needsTotal / grandTotal) * 100 : 0;
-  const wantsPercentage = grandTotal > 0 ? (wantsTotal / grandTotal) * 100 : 0;
-  const savingsPercentage =
-    grandTotal > 0 ? (savingsTotal / grandTotal) * 100 : 0;
-  const emergencyPercentage =
-    grandTotal > 0 ? (emergencyTotal / grandTotal) * 100 : 0;
-  const investmentsPercentage =
-    grandTotal > 0 ? (investmentsTotal / grandTotal) * 100 : 0;
+  const needsPercentage = calculatePercent(needsTotal, grandTotal);
+  const wantsPercentage = calculatePercent(wantsTotal, grandTotal);
+  const savingsPercentage = calculatePercent(savingsTotal, grandTotal);
+  const emergencyPercentage = calculatePercent(emergencyTotal, grandTotal);
+  const investmentsPercentage = calculatePercent(investmentsTotal, grandTotal);
 
   // Needs and Wants Stats Cards
   document.querySelector("#needs-total").textContent =
-    `₱${needsTotal.toFixed(2)}`;
+    currencyFormatter.format(needsTotal);
   document.querySelector("#wants-total").textContent =
-    `₱${wantsTotal.toFixed(2)}`;
+    currencyFormatter.format(wantsTotal);
 
   const categories = [
     {
@@ -245,6 +336,7 @@ function updateCategoryTotal() {
 // Save to localStorage
 function saveToLocalStorage() {
   localStorage.setItem("expense", JSON.stringify(expenseArray));
+  localStorage.setItem("income", JSON.stringify(incomeArray));
 }
 
 // Load expense localStorage
@@ -257,12 +349,27 @@ function loadExpenses() {
   }
 }
 
+// load income localStorage
+function loadIncome() {
+  const income = localStorage.getItem("income");
+  if (income) {
+    incomeArray = JSON.parse(income);
+  } else {
+    incomeArray = [];
+  }
+}
+
+// FORMAT NUMBER
+const currencyFormatter = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+});
+
 // DISPLAY FUNCTIONS
 // Display Expense
 function displayExpenses() {
   const tbody = document.querySelector("#expenses-tbody");
   const emptyState = document.querySelector("#empty-state");
-  tbody.innerHTML = "";
 
   if (emptyState) {
     tbody.appendChild(emptyState);
@@ -274,8 +381,9 @@ function displayExpenses() {
     emptyState.style.display = "none";
   }
 
+  let html = "";
   expenseArray.forEach((expense) => {
-    tbody.innerHTML += `
+    html += `
    <tr>
    <td>
    <span class="category-badge ${expense.expenseCategory.toLowerCase()}">
@@ -298,4 +406,5 @@ function displayExpenses() {
    </tr>
    `;
   });
+  tbody.innerHTML = html;
 }
